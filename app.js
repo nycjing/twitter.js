@@ -3,6 +3,14 @@ const chalk = require( 'chalk' );
 const nunjucks = require('nunjucks');
 const app = express(); // creates an instance of an express application
 const routes = require('./routes');
+var  fs = require('fs');
+var  mime = require('mime');
+var   bodyParser = require(body-parser);
+
+var socketio = require('socket.io');
+// ...
+var server = app.listen(3000);
+var io = socketio.listen(server);
 
 app.set('view engine', 'html'); // have res.render work with html files
 app.engine('html', nunjucks.render); // when giving html files to res.render, tell it to use nunjucks
@@ -21,9 +29,11 @@ nunjucks.configure('views',{noCache: true});
 // nunjucks.render('index.html', locals, function (err, output) {
 //     console.log(output);
 // });
-app.use('/', routes);
+app.use('/', routes(io));
 
 app.use(express.static('public'))
+app.use(bodyParser.urlencoded({extended:true}));
+app.use(bodyParser.json());
 
 app.use(function (req, res, next) {
   console.log('Time:', Date.now());
